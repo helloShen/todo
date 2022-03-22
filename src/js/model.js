@@ -1,38 +1,76 @@
+import Store from './store.js';
+
 export default (() => {
-    const items = [];
 
-    const Item = (() => {
-        function create(text) {
-            const item = {
+    const ItemFactory = (() => {
+
+        const fns = { 
+            getId: function() {
+                return this.id;
+            },
+            getTitle: function() {
+                return this.title;
+            },
+            setTitle: function(newTitle) {
+                this.title = newTitle;
+            },
+            getComplete: function() {
+                return this.complete;
+            },
+            setComplete: function(bool) {
+                this.complete = bool;
+            }
+        };
+
+        function createProto(text) {
+            return {
                 id: Date.now(),
-                title: text
+                title: text,
+                complete: false
             };
-            return Object.assign(item, this);
         }
 
-        function getId() {
-            return this.id;
+        function bindFunction(obj) {
+            return Object.assign(obj, fns);
         }
 
-        function getTitle() {
-            return this.title;
-        }
+        return { createProto, bindFunction };
 
-        function setTitle(text) {
-            this.title = text;
-        }
-
-        return { create, getId, getTitle, setTitle };
     })();
 
+    function getItemsArray(type) {
+        const itemsObj = Store.getItemsObject();
+        if (!itemsObj) return [];
+        return Object.getOwnPropertyNames(itemsObj).reduce((arr, name) => {
+            const item = ItemFactory.bindFunction(itemsObj[`${name}`]);
+            if (type) {
+                switch (type) {
+                    case 'all': 
+                        arr.push(item);
+                        break;
+                    case 'active': 
+                        if (!item.getComplete()) {
+                            arr.push(item);
+                        }
+                        break;
+                    case 'complete':
+                        if (item.getComplete()) {
+                            arr.push(item);
+                        }
+                        break;
+                }
+            }
+            return arr;
+        },[]);
+    }
+
     function addItem(text) {
-        items.push(Item.create(text));
+        const itemProto = ItemFactory.createProto(text);
+        let itemsObj = Store.getItemsObject();
+        itemsObj[`${itemProto['id']}`] = itemProto;
+        Store.setItemsObject(itemsObj);
     }
 
-    function getItems() {
-        return items;
-    }
-
-    return { addItem, getItems };
+    return { getItemsArray, addItem };
 
 })();

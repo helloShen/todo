@@ -12,7 +12,7 @@ export default (() => {
     function addItem(ele) {
         Model.addItem(ele.value);
         View.clearAddItemEle();
-        View.showItems(Model.getItems());
+        View.showItems(Model.getItemsArray('all'));
     }
 
     return { bindAddItem };

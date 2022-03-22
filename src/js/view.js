@@ -5,25 +5,23 @@ export default (() => {
 
     const todoEle = document.querySelector('.todo');
     const addItemEle = document.querySelector('.todo > .addItem');
+    const itemsBoardEle = document.querySelector('.todo > .itemsBoard');
+    const itemsContainerEle = document.querySelector('.todo .itemsContainer');
 
     function clearAddItemEle() {
         addItemEle.value = '';
     }
 
-    function getItemsEle() {
-        return document.querySelector('.todo > .items');
+    function showItemsBoard() {
+        if (itemsBoardEle.classList.contains('hidden')) {
+            itemsBoardEle.classList.remove('hidden');
+        } 
     }
 
-    function createItemsEle() {
-        const items = document.createElement('div');
-        items.classList.add('items');
-        todoEle.appendChild(items);
-        return items;
-    }
-
-    function removeItemsEle() {
-        const items = getItemsEle();
-        if (items) items.remove();
+    function hideItemsBoard() {
+        if (!itemsBoardEle.classList.contains('hidden')) {
+            itemsBoardEle.classList.add('hidden');
+        }
     }
 
     function whenAddItem(handler) {
@@ -31,9 +29,14 @@ export default (() => {
     }
 
     function showItems(items) {
-        let itemsEle = getItemsEle();
-        if (!itemsEle) itemsEle = createItemsEle();
-        itemsEle.insertAdjacentHTML('afterbegin', Template.renderItems(items));
+        if (items.length === 0) {
+            hideItemsBoard();
+            return;
+        } else {
+            itemsContainerEle.innerHTML = '';
+            itemsContainerEle.insertAdjacentHTML('afterbegin', Template.renderItems(items));
+            showItemsBoard();
+        } 
     }
 
     return { clearAddItemEle, whenAddItem, showItems };
