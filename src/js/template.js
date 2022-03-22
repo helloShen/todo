@@ -1,16 +1,16 @@
 export default (() => {
 
-    function renderItems(items) {
-        return items.reduce((result, item) => {
-            const str = 
-            `<div class="item" data-id=${item.getId()}>
-                ${item.getTitle()}
-            </div>`;
-            return result + str;
-        }, '');
+    function renderItem(itemObj) {
+        const str = 
+        `<div class="item" data-id=${itemObj.id}>
+            <input class="toggle" type="checkbox"> 
+            <label>${itemObj.title}</label>
+            <i class="delete material-icons">clear</i>
+        </div>`;
+        return str;
     }
 
-    return { renderItems };
+    return { renderItem };
 
 })();
 

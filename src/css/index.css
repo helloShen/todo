@@ -1,7 +1,10 @@
 @import url('./norm.css');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
 :root {
     --black: black;
+    --gray: gray;
+    --red: red;
 }
 
 body {
@@ -35,6 +38,37 @@ body {
     font-size: 1.5rem;
     border: 1px solid var(--black); 
     display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 2rem 1fr 2rem;
     align-items: center;
 }
 
+.todo .item.completed {
+    color: var(--gray);
+}
+
+.todo .item > .toggle,
+.todo .item > .delete {
+    justify-self: center;
+}
+
+.todo .itemsFooter {
+    width: 100%;
+    height: 4rem;
+    display: grid;
+    grid-auto-flow: column;
+    gap: .5rem;
+}
+
+.todo .itemsFooter > .route {
+    height: 4rem;
+    padding: 1rem;
+    border: 1px solid var(--black);
+    display: grid;
+    align-items: center;
+    justify-items: center;
+}
+
+.todo .itemsFooter > .route.current {
+    background-color: var(--red);
+}

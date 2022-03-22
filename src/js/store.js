@@ -1,19 +1,26 @@
-// import Controller from './controller.js';
-
 export default (() => {
 
-    const dataKey = 'items';
+    const itemsKey = 'todoItems';
+    const routeKey = 'todoCurrentRoute';
 
     function getItemsObject() {
-        const data = window.localStorage.getItem(dataKey);
+        const data = window.localStorage.getItem(itemsKey);
         if (data) return JSON.parse(data);
         return {};
     }
 
     function setItemsObject(itemsObj) {
-        window.localStorage.setItem(dataKey, JSON.stringify(itemsObj));
+        window.localStorage.setItem(itemsKey, JSON.stringify(itemsObj));
     }
 
-    return { getItemsObject, setItemsObject };
+    function getCurrentRoute(route) {
+        return window.localStorage.getItem(`${routeKey}`);
+    }
+
+    function setCurrentRoute(route) {
+        window.localStorage.setItem(`${routeKey}`, route);
+    }
+
+    return { getItemsObject, setItemsObject, getCurrentRoute, setCurrentRoute };
 
 })();

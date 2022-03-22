@@ -3,4 +3,5 @@ import Controller from './controller.js';
 
 (() => {
     Controller.bindAddItem();
+    Controller.showItems();
 })();

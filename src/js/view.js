@@ -1,4 +1,3 @@
-// import Controller from './controller.js';
 import Template from './template.js';
 
 export default (() => {
@@ -28,17 +27,29 @@ export default (() => {
         addItemEle.addEventListener('change', () => handler(addItemEle), false);
     }
 
-    function showItems(items) {
-        if (items.length === 0) {
-            hideItemsBoard();
-            return;
-        } else {
-            itemsContainerEle.innerHTML = '';
-            itemsContainerEle.insertAdjacentHTML('afterbegin', Template.renderItems(items));
-            showItemsBoard();
-        } 
+    function whenToggleCompleted(target, callback) {
+        const checkbox = target.querySelector('.toggle');
+        checkbox.addEventListener('change', () => {
+            target.classList.toggle('completed');
+            callback(target);
+        });
     }
 
-    return { clearAddItemEle, whenAddItem, showItems };
+    function clearItems() {
+        itemsContainerEle.innerHTML = '';
+    }
+
+    function showItem(itemObj, callback) {
+        itemsContainerEle.insertAdjacentHTML('beforeend', Template.renderItem(itemObj));
+        const target = itemsContainerEle.querySelector(`.item[data-id="${itemObj.id}"]`);
+        if (itemObj.completed) {
+            target.classList.add('completed');
+            const checkbox = target.querySelector('.toggle');
+            checkbox.checked = true;
+        }
+        callback(target);
+    }
+
+    return { clearAddItemEle, hideItemsBoard, showItemsBoard, whenAddItem, whenToggleCompleted, clearItems, showItem };
 
 })();

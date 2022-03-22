@@ -2,60 +2,71 @@ import Store from './store.js';
 
 export default (() => {
 
-    const ItemFactory = (() => {
+    const Item = (() => {
 
-        const fns = { 
-            getId: function() {
-                return this.id;
-            },
-            getTitle: function() {
-                return this.title;
-            },
-            setTitle: function(newTitle) {
-                this.title = newTitle;
-            },
-            getComplete: function() {
-                return this.complete;
-            },
-            setComplete: function(bool) {
-                this.complete = bool;
-            }
-        };
-
-        function createProto(text) {
+        function create(text) {
             return {
                 id: Date.now(),
                 title: text,
-                complete: false
+                completed: false
             };
         }
 
-        function bindFunction(obj) {
-            return Object.assign(obj, fns);
+        function getId() {
+            return this.id;
         }
 
-        return { createProto, bindFunction };
+        function getTitle() {
+            return this.title;
+        }
+        
+        function setTitle(title) {
+            this.title = title;
+        }
+
+        function hasCompleted() {
+            return this.completed;
+        }
+
+        function toggleCompleted() {
+            this.completed = !this.completed;
+        }
+
+        return { create, getId, getTitle, setTitle, hasCompleted, toggleCompleted  };
 
     })();
 
-    function getItemsArray(type) {
+    function getCurrentRoute() {
+        const route = Store.getCurrentRoute();
+        if (!route) {
+            Store.setCurrentRoute('all');
+            return Store.getCurrentRoute();
+        }
+        return route;
+    }
+
+    function setCurrentRoute(route) {
+        Store.setCurrentRoute(route);
+    }
+
+    function getItemsArray(route) {
         const itemsObj = Store.getItemsObject();
         if (!itemsObj) return [];
         return Object.getOwnPropertyNames(itemsObj).reduce((arr, name) => {
-            const item = ItemFactory.bindFunction(itemsObj[`${name}`]);
-            if (type) {
-                switch (type) {
+            const itemObj = itemsObj[`${name}`];
+            if (route) {
+                switch (route) {
                     case 'all': 
-                        arr.push(item);
+                        arr.push(itemObj);
                         break;
                     case 'active': 
-                        if (!item.getComplete()) {
-                            arr.push(item);
+                        if (!Item.hasCompleted.call(itemObj)) {
+                            arr.push(itemObj);
                         }
                         break;
                     case 'complete':
-                        if (item.getComplete()) {
-                            arr.push(item);
+                        if (Item.hasCompleted.call(itemObj)) {
+                            arr.push(itemObj);
                         }
                         break;
                 }
@@ -65,12 +76,20 @@ export default (() => {
     }
 
     function addItem(text) {
-        const itemProto = ItemFactory.createProto(text);
+        const item= Item.create(text);
         let itemsObj = Store.getItemsObject();
-        itemsObj[`${itemProto['id']}`] = itemProto;
+        itemsObj[`${Item.getId.call(item)}`] = item;
         Store.setItemsObject(itemsObj);
     }
 
-    return { getItemsArray, addItem };
+    function toggleCompleted(itemId) {
+        const itemsObj = Store.getItemsObject();
+        if (!itemsObj) return;
+        const item = itemsObj[`${itemId}`];
+        Item.toggleCompleted.call(item);
+        Store.setItemsObject(itemsObj);
+    }
+
+    return { Item, getCurrentRoute, setCurrentRoute, getItemsArray, addItem, toggleCompleted };
 
 })();
