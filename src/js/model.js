@@ -49,9 +49,13 @@ export default (() => {
         Store.setCurrentRoute(route);
     }
 
+    function hasItem() {
+        return Store.hasItem();
+    }
+
     function getItemsArray(route) {
+        if (!Store.hasItem()) return [];
         const itemsObj = Store.getItemsObject();
-        if (!itemsObj) return [];
         return Object.getOwnPropertyNames(itemsObj).reduce((arr, name) => {
             const itemObj = itemsObj[`${name}`];
             if (route) {
@@ -76,20 +80,35 @@ export default (() => {
     }
 
     function addItem(text) {
-        const item= Item.create(text);
-        let itemsObj = Store.getItemsObject();
-        itemsObj[`${Item.getId.call(item)}`] = item;
-        Store.setItemsObject(itemsObj);
+        Store.updateItems((itemsObj) => {
+            const itemObj = Item.create(text);
+            itemsObj[`${Item.getId.call(itemObj)}`] = itemObj;
+        });
     }
 
     function toggleCompleted(itemId) {
-        const itemsObj = Store.getItemsObject();
-        if (!itemsObj) return;
-        const item = itemsObj[`${itemId}`];
-        Item.toggleCompleted.call(item);
-        Store.setItemsObject(itemsObj);
+        if (!Store.hasItem()) return;
+        Store.updateItems((itemsObj) => {
+            const itemObj = itemsObj[`${itemId}`];
+            Item.toggleCompleted.call(itemObj);
+        });
     }
 
-    return { Item, getCurrentRoute, setCurrentRoute, getItemsArray, addItem, toggleCompleted };
+    function deleteItem(itemId) {
+        if (!Store.hasItem()) return;
+        Store.updateItems((itemsObj) => {
+            delete itemsObj[`${itemId}`];
+        });
+    }
+
+    function updateItem(itemId, itemValue) {
+        if (!Store.hasItem()) return;
+        Store.updateItems((itemsObj) => {
+            const itemObj = itemsObj[`${itemId}`];
+            Item.setTitle.call(itemObj, itemValue);
+        });
+    }
+
+    return { Item, getCurrentRoute, setCurrentRoute, hasItem, getItemsArray, addItem, toggleCompleted, deleteItem, updateItem };
 
 })();

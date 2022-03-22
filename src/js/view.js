@@ -23,8 +23,13 @@ export default (() => {
         }
     }
 
-    function whenAddItem(handler) {
-        addItemEle.addEventListener('change', () => handler(addItemEle), false);
+    function tryToHideItemsBoard() {
+        const items = itemsContainerEle.querySelectorAll('.item');
+        if (items.length === 0) hideItemsBoard();
+    }
+
+    function whenAddItem(callback) {
+        addItemEle.addEventListener('change', () => callback(addItemEle), false);
     }
 
     function whenToggleCompleted(target, callback) {
@@ -33,6 +38,35 @@ export default (() => {
             target.classList.toggle('completed');
             callback(target);
         });
+    }
+
+    function whenDeleteItem(target, callback) {
+        const btn = target.querySelector('.delete');
+        btn.addEventListener('click', () => {
+            target.remove();
+            callback(target);
+        });
+    }
+
+    function whenEditItem(target, callback) {
+        const label = target.querySelector('.text');
+        label.addEventListener('dblclick', () => {
+            label.classList.add('editting');
+            label.setAttribute('contenteditable', true);
+            label.focus();
+        });
+        label.addEventListener('blur', () => {
+            label.classList.remove('editting');
+            label.setAttribute('contenteditable', false);
+            callback(target, label.textContent);
+        });
+        label.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') label.blur();
+        });
+    }
+
+    function removeElement(target) {
+        target.remove();
     }
 
     function clearItems() {
@@ -50,6 +84,6 @@ export default (() => {
         callback(target);
     }
 
-    return { clearAddItemEle, hideItemsBoard, showItemsBoard, whenAddItem, whenToggleCompleted, clearItems, showItem };
+    return { clearAddItemEle, hideItemsBoard, tryToHideItemsBoard, showItemsBoard, whenAddItem, whenToggleCompleted, whenDeleteItem, whenEditItem, removeElement, clearItems, showItem };
 
 })();
