@@ -8,13 +8,18 @@
   </head>
   <body>
     <div class="todo">
-      <input class="addItem" type="text" name="addItem" id="addItem">
+      <div class="addItemContainer">
+        <div class="toggleAll">All</div>
+        <input class="addItem" type="text" name="addItem" id="addItem">
+      </div>
       <div class="itemsBoard">
         <div class="itemsContainer hidden"></div>
         <div class="itemsFooter">
-          <div class="route all">All</div>
-          <div class="route active">Active</div>
-          <div class="route complete">Completed</div>
+          <div class="activeItemsCount"><span class="count"></span> item left</div>
+          <div class="route" data-route="all">All</div>
+          <div class="route" data-route="active">Active</div>
+          <div class="route" data-route="completed">Completed</div>
+          <div class="completedItemsCount">Clear <span class="count"></span> completed items</div>
         </div>
       </div>
     </div>

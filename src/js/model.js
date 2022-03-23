@@ -25,7 +25,7 @@ export default (() => {
         }
 
         function hasCompleted() {
-            return this.completed;
+            return !!this.completed;
         }
 
         function toggleCompleted() {
@@ -49,31 +49,43 @@ export default (() => {
         Store.setCurrentRoute(route);
     }
 
+    function countItems() {
+        const itemsObj = Store.getItemsObject();
+        let activeCount = 0, completedCount = 0;
+        for (const [key, value] of Object.entries(itemsObj)) {
+            if (Item.hasCompleted.call(value)) {
+                completedCount++;
+            } else {
+                activeCount++;
+            }
+        }
+        return [activeCount, completedCount];
+    }
+
     function hasItem() {
         return Store.hasItem();
     }
 
+    /* always filter with current route */
     function getItemsArray(route) {
-        if (!Store.hasItem()) return [];
+        if (!hasItem()) return [];
         const itemsObj = Store.getItemsObject();
         return Object.getOwnPropertyNames(itemsObj).reduce((arr, name) => {
             const itemObj = itemsObj[`${name}`];
-            if (route) {
-                switch (route) {
-                    case 'all': 
+            switch (route) {
+                case 'all': 
+                    arr.push(itemObj);
+                    break;
+                case 'active': 
+                    if (!Item.hasCompleted.call(itemObj)) {
                         arr.push(itemObj);
-                        break;
-                    case 'active': 
-                        if (!Item.hasCompleted.call(itemObj)) {
-                            arr.push(itemObj);
-                        }
-                        break;
-                    case 'complete':
-                        if (Item.hasCompleted.call(itemObj)) {
-                            arr.push(itemObj);
-                        }
-                        break;
-                }
+                    }
+                    break;
+                case 'completed':
+                    if (Item.hasCompleted.call(itemObj)) {
+                        arr.push(itemObj);
+                    }
+                    break;
             }
             return arr;
         },[]);
@@ -87,7 +99,7 @@ export default (() => {
     }
 
     function toggleCompleted(itemId) {
-        if (!Store.hasItem()) return;
+        if (!hasItem()) return;
         Store.updateItems((itemsObj) => {
             const itemObj = itemsObj[`${itemId}`];
             Item.toggleCompleted.call(itemObj);
@@ -95,20 +107,37 @@ export default (() => {
     }
 
     function deleteItem(itemId) {
-        if (!Store.hasItem()) return;
+        if (!hasItem()) return;
         Store.updateItems((itemsObj) => {
             delete itemsObj[`${itemId}`];
         });
     }
 
     function updateItem(itemId, itemValue) {
-        if (!Store.hasItem()) return;
+        if (!hasItem()) return;
         Store.updateItems((itemsObj) => {
             const itemObj = itemsObj[`${itemId}`];
             Item.setTitle.call(itemObj, itemValue);
         });
     }
 
-    return { Item, getCurrentRoute, setCurrentRoute, hasItem, getItemsArray, addItem, toggleCompleted, deleteItem, updateItem };
+    function clearAllCompletedItems() {
+        const arr = getItemsArray('completed');
+        Store.updateItems((itemsObj) => {
+            arr.forEach((itemObj) => {
+                delete itemsObj[`${Item.getId.call(itemObj)}`];
+            });
+        });
+    }
+
+    function toggleAll(itemsArr) {
+        Store.updateItems((itemsObj) => {
+            itemsArr.forEach((itemObj) => {
+                Item.toggleCompleted.call(itemsObj[`${Item.getId.call(itemObj)}`]);
+            });
+        });
+    }
+
+    return { Item, getCurrentRoute, setCurrentRoute, hasItem, countItems, getItemsArray, addItem, toggleCompleted, deleteItem, updateItem, clearAllCompletedItems, toggleAll };
 
 })();
