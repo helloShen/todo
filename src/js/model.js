@@ -36,6 +36,23 @@ export default (() => {
 
     })();
 
+    /* Query is a [key, value] pair.
+     * Once a query is created, it's read-only. */
+    function Query(inKey, inValue) {
+        const key = inKey;
+        const value = inValue;
+
+        function getKey() {
+            return key;
+        }
+
+        function getValue() {
+            return value;
+        }
+
+        return { getKey, getValue };
+    }
+
     function getCurrentRoute() {
         const route = Store.getCurrentRoute();
         if (!route) {
@@ -49,60 +66,40 @@ export default (() => {
         Store.setCurrentRoute(route);
     }
 
-    function countItems() {
-        const itemsObj = Store.getItemsObject();
-        let activeCount = 0, completedCount = 0;
-        for (const [key, value] of Object.entries(itemsObj)) {
-            if (Item.hasCompleted.call(value)) {
-                completedCount++;
-            } else {
-                activeCount++;
-            }
-        }
-        return [activeCount, completedCount];
-    }
-
     function hasItem() {
         return Store.hasItem();
     }
 
-    /* always filter with current route */
-    function getItemsArray(route) {
+    /* return an array of all exiting items */
+    function findAllItems() {
         if (!hasItem()) return [];
         const itemsObj = Store.getItemsObject();
-        return Object.getOwnPropertyNames(itemsObj).reduce((arr, name) => {
-            const itemObj = itemsObj[`${name}`];
-            switch (route) {
-                case 'all': 
-                    arr.push(itemObj);
-                    break;
-                case 'active': 
-                    if (!Item.hasCompleted.call(itemObj)) {
-                        arr.push(itemObj);
-                    }
-                    break;
-                case 'completed':
-                    if (Item.hasCompleted.call(itemObj)) {
-                        arr.push(itemObj);
-                    }
-                    break;
-            }
-            return arr;
-        },[]);
+        const arr = [];
+        for (const [key, value] of Object.entries(itemsObj)) {
+            arr.push(itemsObj[`${key}`]);
+        }
+        return arr;
+    }
+
+    /* return a sub-array which meet the requirements of the query 
+     * queries is an array of [key, value] pair */
+    function findItems(queries) {
+        const allItemsArr = findAllItems();
+        return allItemsArr.filter((itemObj) => {
+            let result = true;
+            queries.forEach((query) => {
+                if (itemObj[`${query.getKey()}`] !== query.getValue()) {
+                    result = false;
+                }
+            });
+            return result;
+        });
     }
 
     function addItem(text) {
         Store.updateItems((itemsObj) => {
             const itemObj = Item.create(text);
             itemsObj[`${Item.getId.call(itemObj)}`] = itemObj;
-        });
-    }
-
-    function toggleCompleted(itemId) {
-        if (!hasItem()) return;
-        Store.updateItems((itemsObj) => {
-            const itemObj = itemsObj[`${itemId}`];
-            Item.toggleCompleted.call(itemObj);
         });
     }
 
@@ -121,12 +118,11 @@ export default (() => {
         });
     }
 
-    function clearAllCompletedItems() {
-        const arr = getItemsArray('completed');
+    function toggleCompleted(itemId) {
+        if (!hasItem()) return;
         Store.updateItems((itemsObj) => {
-            arr.forEach((itemObj) => {
-                delete itemsObj[`${Item.getId.call(itemObj)}`];
-            });
+            const itemObj = itemsObj[`${itemId}`];
+            Item.toggleCompleted.call(itemObj);
         });
     }
 
@@ -138,6 +134,6 @@ export default (() => {
         });
     }
 
-    return { Item, getCurrentRoute, setCurrentRoute, hasItem, countItems, getItemsArray, addItem, toggleCompleted, deleteItem, updateItem, clearAllCompletedItems, toggleAll };
+    return { Item, Query, getCurrentRoute, setCurrentRoute, hasItem, findItems, addItem, toggleCompleted, deleteItem, updateItem, toggleAll };
 
 })();

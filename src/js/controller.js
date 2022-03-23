@@ -3,8 +3,25 @@ import Model from './model.js';
 
 export default (() => {
 
+    const ItemsQueries = (() => {
+        const queries = {
+            'all': [],
+            'active': [Model.Query('completed', false)],
+            'completed': [Model.Query('completed', true)]
+        };
+        function get(route) {
+            return queries[`${route}`];
+        }
+
+        return { get };
+    })();
+
+    function filterItems(route) {
+        return Model.findItems(ItemsQueries.get(route));
+    }
+
     function showItems() {
-        const itemsObjArr = Model.getItemsArray(Model.getCurrentRoute());
+        const itemsObjArr = filterItems(Model.getCurrentRoute());
         View.clearItems();
         itemsObjArr.forEach((itemObj) => {
             View.showItem(itemObj, (target) => {
@@ -16,7 +33,8 @@ export default (() => {
     }
 
     function updateItemsCount() {
-        const [activeCount, completedCount] = Model.countItems();
+        const activeCount = filterItems('active').length;
+        const completedCount = filterItems('completed').length;
         View.updateActiveItemsCount(activeCount);
         View.updateCompletedItemsCount(completedCount);
         if (completedCount === 0) {
@@ -94,18 +112,22 @@ export default (() => {
     }
 
     function clearAllCompletedItems() {
-        Model.clearAllCompletedItems();
+        const completedItemsArr = Model.findItems(ItemsQueries.get('completed'));
+        completedItemsArr.forEach((itemObj) => {
+            const id = Model.Item.getId.call(itemObj);
+            Model.deleteItem(id);
+        });
         showItems();
         updateItemsCount();
     }
 
     function toggleAll() {
         if (Model.hasItem()) {
-            const counts = Model.countItems();
-            if (counts[0] > 0) { // has active item
-                Model.toggleAll(Model.getItemsArray('active'));
+            const activeItemsArr = Model.findItems(ItemsQueries.get('active'));
+            if (activeItemsArr.length > 0) { 
+                Model.toggleAll(activeItemsArr);
             } else {
-                Model.toggleAll(Model.getItemsArray('completed'));
+                Model.toggleAll(Model.findItems(ItemsQueries.get('completed')));
             }
             showItems();
             updateItemsCount();
