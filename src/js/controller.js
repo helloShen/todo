@@ -25,9 +25,9 @@ export default (() => {
         View.clearItems();
         itemsObjArr.forEach((itemObj) => {
             View.showItem(itemObj, (target) => {
-                enableToggleCompleted(target);
-                enableDeleteItem(target);
-                enableEditItem(target);
+                View.bindToggleCompleted(target, toggleCompleted);
+                View.bindDeleteItem(target, deleteItem);
+                View.bindEditItem(target, editItem);
             });
         });
     }
@@ -53,18 +53,6 @@ export default (() => {
         View.bindAddItem(addItem);
     }
 
-    function enableToggleCompleted(target) {
-        View.bindToggleCompleted(target, toggleCompleted);
-    }
-
-    function enableDeleteItem(target) {
-        View.bindDeleteItem(target, deleteItem);
-    }
-
-    function enableEditItem(target) {
-        View.bindEditItem(target, editItem);
-    }
-
     function enableChangeRoute() {
         const currentRoute = Model.getCurrentRoute();
         View.bindChangeRoute(changeRoute, () => View.markCurrentRoute(currentRoute));
@@ -78,31 +66,31 @@ export default (() => {
         View.bindToggleAll(toggleAll);
     }
 
-    function addItem(target) {
-        Model.addItem(target.value);
+    function addItem(text) {
+        Model.addItem(text);
         View.clearAddItemEle();
         showItems();
         updateItemsCount();
     }
 
-    function toggleCompleted(target) {
-        Model.toggleCompleted(target.dataset.id);
+    function toggleCompleted(itemId) {
+        Model.toggleCompleted(itemId);
         showItems(); // must refresh current route.
         updateItemsCount();
     }
 
-    function deleteItem(target) {
-        Model.deleteItem(target.dataset.id);
+    function deleteItem(itemId) {
+        Model.deleteItem(itemId);
         updateItemsCount();
     }
 
-    function editItem(target, itemValue) {
+    function editItem(itemId, itemValue, callback) {
         if (!itemValue) {
-            Model.deleteItem(target.dataset.id);
-            View.removeElement(target);
+            Model.deleteItem(itemId);
             updateItemsCount();
+            callback(); // callback view if need to remove that item from view.
         } else {
-            Model.updateItem(target.dataset.id, itemValue);
+            Model.updateItem(itemId, itemValue);
         }
     }
 

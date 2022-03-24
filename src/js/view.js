@@ -19,14 +19,14 @@ export default (() => {
     }
 
     function bindAddItem(callback) {
-        addItemEle.addEventListener('change', () => callback(addItemEle), false);
+        addItemEle.addEventListener('change', () => callback(addItemEle.value), false);
     }
 
     function bindToggleCompleted(target, callback) {
         const checkbox = target.querySelector('.toggle');
         checkbox.addEventListener('change', () => {
             target.classList.toggle('completed');
-            callback(target);
+            callback(target.dataset.id);
         });
     }
 
@@ -34,7 +34,7 @@ export default (() => {
         const btn = target.querySelector('.delete');
         btn.addEventListener('click', () => {
             target.remove();
-            callback(target);
+            callback(target.dataset.id);
         });
     }
 
@@ -48,7 +48,9 @@ export default (() => {
         label.addEventListener('blur', () => {
             label.classList.remove('editting');
             label.setAttribute('contenteditable', false);
-            callback(target, label.textContent);
+            callback(target.dataset.id, label.textContent, () => {
+                removeElement(target);
+            });
         });
         label.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') label.blur();
