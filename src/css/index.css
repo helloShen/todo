@@ -1,50 +1,179 @@
 @import url('./norm.css');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;400;700&family=Roboto:wght@100;400;500;700&display=swap');
 
 :root {
-    --black: black;
-    --gray: gray;
-    --red: red;
+    --black: #24292D;
+    --black-dimmer: #2B3137;
+    --gray: #58606a;
+    --border-gray: #e7e9ea;
+    --back-gray: #f6f8fa;
+    --white: #FFFFFF;
+    --red: #DB2C00;
+    --green: #2DA44E;
+    --blue: #0D74E7;
+    --blue2: #0969DA;
+    --purple: #6e5494;
 }
 
 body {
     min-height: 100vh;
+    background-color: var(--back-gray);
+}
+
+.logo {
+    height: 6rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    color: var(--black);
     display: grid;
-    align-items: center;
+    align-items: end;
     justify-items: center;
 }
 
+.main {
+    width: 100%;
+    margin: 2rem 0;
+    display: grid;
+    justify-content: center;
+}
+
 .todo {
-    width: 24rem;
+    width: 36rem;
+    border-radius: .5rem;
+    box-shadow: 1px 1px 4px var(--border-gray);
+}
+
+.todo > .title {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    width: 100%;
+    height: 7rem;
+    padding: 2rem 3rem;
+    border: 1px solid var(--border-gray);
+    border-bottom: 0;
+    border-top-left-radius: .5rem;
+    border-top-right-radius: .5rem;
+    background-color: var(--white);
+    display: grid;
+    grid-auto-flow: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.todo .date {
+    width: 7rem;
+    height: 3rem;
+    color: var(--gray);
+    display: grid;
+    grid-template-columns: 3rem 3rem;
+    grid-template-rows: 1.5rem 1.5rem;
+    grid-auto-flow: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.todo .day {
+    font-size: 3rem;
+    grid-row: 1 / 3;
+    grid-column: 1 / 2;
+}
+
+.todo .month {
+    justify-self: start;
+    align-self: end;
+    font-size: 1rem;
+    grid-row: 1 / 2;
+    grid-column: 2 / 3;
+    padding-left: 1rem;
+}
+
+.todo .year {
+    justify-self: start;
+    align-self: start;
+    font-size: 1rem;
+    grid-row: 2 / 3;
+    grid-column: 2 / 3;
+    padding-left: 1rem;
+}
+
+
+.todo .weekday {
+    font-size: 1.5rem;
+    font-weight: 100;
 }
 
 .todo > .addItemContainer {
     width: 100%;
     height: 4rem;
     font-size: 1.5rem;
-    border: 1px solid var(--black);
+    border: 1px solid var(--border-gray);
+    background-color: var(--white);
     display: grid;
     grid-auto-flow: column;
-    grid-template-columns: 2rem 1fr;
+    grid-template-columns: 3rem 1fr;
     align-items: center;
 }
 
+.todo > .addItemContainer.alone {
+    border-bottom-left-radius: .5rem;
+    border-bottom-right-radius: .5rem;
+}
+
 .todo .toggleAll {
-    width: 2rem;
-    height: 2rem;
-    justify-self: center;
-    font-size: .75rem;
-    border-radius: 1rem;
-    background-color: var(--red);
-    display: grid;
-    align-items: center;
-    justify-items: center;
+    appearance: none;
+}
+
+.todo .toggleAll::after {
+    font-size: 2rem;
+    margin: 0 .5rem;
+    content: "radio_button_unchecked";
+    color: var(--border-gray);
+}
+
+.todo .toggleAll:checked::after {
+    content: "check_circle";
+    color: var(--green);
+    opacity: .6;
+}
+
+.todo .toggleAll.hide {
+    opacity: 0;
+}
+
+.todo .addItemForm {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 100;
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+.todo .addItemLabel {
+    position: absolute;
+    left: 1px;
+    top: 1.2rem;
+    color: var(--border-gray);
+    user-select: none;
+}
+
+.todo .addItemLabel.hide {
+    display: none;
 }
 
 .todo .addItem {
     height: 100%;
+    width: 100%;
     border: 0px;
+    border-top-right-radius: .5rem;
     font-size: 1.5rem;
+    outline: none;
+    color: var(--black);
+}
+
+.todo .addItem.alone {
+    border-bottom-right-radius: .5rem;
 }
 
 .todo > .itemsBoard {
@@ -57,64 +186,168 @@ body {
 
 .todo .item {
     width: 100%;
+    margin: -1px 0;
     height: 4rem;
+    font-family: 'Roboto', sans-serif;
     font-size: 1.5rem;
-    border: 1px solid var(--black); 
+    border: 1px solid var(--border-gray); 
+    background-color: var(--white);
     display: grid;
     grid-auto-flow: column;
-    grid-template-columns: 2rem 1fr 2rem;
+    grid-template-columns: 3rem 1fr 3rem;
     align-items: center;
 }
 
-.todo .item.completed {
-    color: var(--gray);
+.todo .item > .toggle {
+    appearance: none;
 }
 
-.todo .item > .toggle,
-.todo .item > .delete {
-    justify-self: center;
+.todo .item > .toggle::after {
+    content: "radio_button_unchecked";
+    margin: 0 .75rem;
+    color: var(--border-gray);
+    opacity: .6;
+}
+
+.todo .item > .toggle:checked::after {
+    content: "check_circle";
+    color: var(--green);
 }
 
 .todo .item > .text {
     height: 100%;
+    color: var(--gray);
     display: grid;
     align-items: center;
 }
 
+.todo .item.completed > .text {
+    opacity: .6;
+    text-decoration: line-through;
+}
+
 .todo .item > .text.editting {
-    font-size: 1rem;
+    outline-color: var(--border-gray);
+    background-color: var(--back-gray);
 }
 
 .todo .item > .delete {
+    opacity: 0;
+    justify-self: center;
     cursor: pointer;
     user-select: none;
+    margin-right: 1rem;
 }
 
-.todo .item > .delete:hover {
+.todo .item:hover > .delete {
+    opacity: 1;
     color: var(--red);
 }
 
 .todo .itemsFooter {
     width: 100%;
     height: 4rem;
+    font-size: .75rem;
+    font-family: 'Poppins', sans-serif;
+    border: 1px solid var(--border-gray);
+    border-bottom-left-radius: .5rem;
+    border-bottom-right-radius: .5rem;
+    background-color: var(--white);
     display: grid;
     grid-auto-flow: column;
-    gap: .5rem;
+    align-items: center;
+    justify-items: center;
+}
+
+.todo .itemsFooter > .activeItemsCount,
+.todo .itemsFooter > .completedItemsCount {
+    height: 2rem;
+    margin: 0 1rem;
+    color: var(--gray);
+    user-select: none;
+    display: grid;
+    grid-auto-flow: column;
+    align-items: center;
+    justify-items: center;
+    justify-content: center;
+}
+
+.todo .itemsFooter > .activeItemsCount {
+    width: 4.5rem;
+}
+
+.todo .itemsFooter > .completedItemsCount {
+    width: 11rem;
+    border-radius: .25rem;
+    cursor: pointer;
+    border: 1px solid var(--border-gray);
+    background-color: var(--back-gray);
 }
 
 .todo .itemsFooter > .completedItemsCount.hide {
-    display: none;
+    opacity: 0;
+    cursor: auto;
 }
 
-.todo .itemsFooter > .route {
-    height: 4rem;
-    padding: 1rem;
-    border: 1px solid var(--black);
+.todo .itemsFooter > .routes {
+    height: 2rem;
+    width: 14rem;
+    margin: 0 1rem;
+    user-select: none;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 3rem 4rem 6rem;
+    grid-auto-flow: column;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+}
+
+.todo .itemsFooter .route {
+    padding: .25rem .75rem;
+    color: var(--gray);
+    border-radius: .25rem;
     display: grid;
     align-items: center;
     justify-items: center;
 }
 
-.todo .itemsFooter > .route.current {
-    background-color: var(--red);
+.todo .itemsFooter .route:hover {
+    border: 1px solid var(--border-gray);
+}
+
+.todo .itemsFooter .route.current {
+    background-color: var(--back-gray);
+    border: 1px solid var(--border-gray);
+}
+
+.footer {
+    height: 4.5rem;
+    width: 100%;
+    font-size: .75rem;
+    color: var(--gray);
+    display: grid;
+    grid-template-rows: repeat(3, 1.5rem);
+    align-items: center;
+    justify-items: center;
+}
+
+.footer .tip,
+.footer .copyright,
+.footer .year {
+    height: 1.5rem;
+    display: grid;
+    grid-auto-flow: column;
+    align-items: center;
+    gap: .25rem;
+}
+
+.footer a {
+    width: 1rem;
+    height: 1rem;
+}
+
+.footer .github {
+    width: 100%;
+    height: 100%;
 }

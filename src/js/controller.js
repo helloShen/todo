@@ -3,6 +3,30 @@ import Model from './model.js';
 
 export default (() => {
 
+    const MyDate = (() => {
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        
+        function getToday() {
+            const today  = new Date();
+            const todayStr = today.toLocaleDateString("en-US", options) // Saturday, September 17, 2016
+            return todayStr.split(', ');
+        }
+        
+        return { getToday };
+    })();
+
+    function showDate() {
+        let [weekday, monthDay, year] = MyDate.getToday();
+        let [month, day] = monthDay.split(' ');
+        month = month.slice(0, 3).toUpperCase();
+        // weekday = weekday.toUpperCase();
+        View.showDate(weekday, day, month, year); 
+    }
+
+    function showFooter() {
+        View.showFooter();
+    }
+
     const ItemsQueries = (() => {
         const queries = {
             'all': [],
@@ -44,13 +68,20 @@ export default (() => {
         }
         if (activeCount + completedCount === 0) {
             View.hideItemsBoard();
+            View.hideToggleAll();
         } else {
             View.showItemsBoard();
+            if (activeCount > 0) {
+                View.toggleAllNotChecked();
+            } else {
+                View.toggleAllChecked();
+            }
         }
     }
 
     function enableAddItem() {
         View.bindAddItem(addItem);
+        View.bindAddItemLabel();
     }
 
     function enableChangeRoute() {
@@ -120,9 +151,8 @@ export default (() => {
             showItems();
             updateItemsCount();
         }
-        
     }
 
-    return { showItems, updateItemsCount, enableAddItem, enableChangeRoute, enableClearCompletedItems, enableToggleAll };
+    return { showFooter, showDate, showItems, updateItemsCount, enableAddItem, enableChangeRoute, enableClearCompletedItems, enableToggleAll };
 
 })();

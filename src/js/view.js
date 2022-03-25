@@ -1,10 +1,19 @@
 import Template from './template.js';
+import GithubImg from '../assets/img/github_black.png';
 
 export default (() => {
 
     const todoEle = document.querySelector('.todo');
+    const titleEle = todoEle.querySelector('.title');
+    const dateEle = titleEle.querySelector('.date');
+    const dayEle = dateEle.querySelector('.day');
+    const monthEle = dateEle.querySelector('.month');
+    const yearEle = dateEle.querySelector('.year');
+    const weekdayEle = titleEle.querySelector('.weekday');
     const toggleAllEle = todoEle.querySelector('.toggleAll');
-    const addItemEle = todoEle.querySelector('.addItem');
+    const addItemContainerEle = todoEle.querySelector('.addItemContainer');
+    const addItemEle = addItemContainerEle.querySelector('.addItem');
+    const addItemLabelEle = addItemContainerEle.querySelector('.addItemLabel');
     const itemsBoardEle = todoEle.querySelector('.itemsBoard');
     const itemsContainerEle = itemsBoardEle.querySelector('.itemsContainer');
     const itemsFooterEle = itemsBoardEle.querySelector('.itemsFooter');
@@ -13,6 +22,14 @@ export default (() => {
     const activeCountNumEle = activeCountEle.querySelector('.count');
     const completedCountEle = itemsFooterEle.querySelector('.completedItemsCount');
     const completedCountNumEle = completedCountEle.querySelector('.count');
+    const footerEle = document.querySelector('.footer');
+
+    function showDate(weekday, day, month, year) {
+        dayEle.textContent = day;
+        monthEle.textContent = month;
+        yearEle.textContent = year;
+        weekdayEle.textContent = weekday;
+    }
 
     function clearAddItemEle() {
         addItemEle.value = '';
@@ -21,6 +38,20 @@ export default (() => {
     function bindAddItem(callback) {
         addItemEle.addEventListener('change', () => callback(addItemEle.value), false);
     }
+
+    function bindAddItemLabel() {
+        addItemEle.addEventListener('input', () => hideAddItemLabel());
+        addItemEle.addEventListener('change', () => hideAddItemLabel());
+    }
+
+    function hideAddItemLabel() {
+        if (addItemEle.value === '') {
+            addItemLabelEle.classList.remove('hide');
+        } else {
+            addItemLabelEle.classList.add('hide');
+        }
+    }
+    
 
     function bindToggleCompleted(target, callback) {
         const checkbox = target.querySelector('.toggle');
@@ -97,27 +128,37 @@ export default (() => {
     }
 
     function showCompletedItemsCount() {
-        if (completedCountEle.classList.contains('hide')) {
-            completedCountEle.classList.remove('hide');
-        }
+        completedCountEle.classList.remove('hide');
     }
 
     function hideCompletedItemsCount() {
-        if (!completedCountEle.classList.contains('hide')) {
-            completedCountEle.classList.add('hide');
-        }
+        completedCountEle.classList.add('hide');
     }
 
     function showItemsBoard() {
-        if (itemsBoardEle.classList.contains('hidden')) {
-            itemsBoardEle.classList.remove('hidden');
-        } 
+        itemsBoardEle.classList.remove('hidden');
+        addItemContainerEle.classList.remove('alone');
+        addItemEle.classList.remove('alone');
     }
 
     function hideItemsBoard() {
-        if (!itemsBoardEle.classList.contains('hidden')) {
-            itemsBoardEle.classList.add('hidden');
-        }
+        itemsBoardEle.classList.add('hidden');
+        addItemContainerEle.classList.add('alone');
+        addItemEle.classList.add('alone');
+    }
+
+    function hideToggleAll() {
+        toggleAllEle.classList.add('hide'); 
+    }
+
+    function toggleAllChecked() {
+        toggleAllEle.classList.remove('hide');
+        toggleAllEle.checked = true;
+    }
+
+    function toggleAllNotChecked() {
+        toggleAllEle.classList.remove('hide');
+        toggleAllEle.checked = false;
     }
 
     function removeElement(target) {
@@ -139,6 +180,12 @@ export default (() => {
         callback(target);
     }
 
-    return { clearAddItemEle, bindAddItem, bindToggleCompleted, bindDeleteItem, bindEditItem, bindChangeRoute, markCurrentRoute, bindClearCompletedItems, bindToggleAll, updateActiveItemsCount, updateCompletedItemsCount, showCompletedItemsCount, hideCompletedItemsCount, hideItemsBoard, showItemsBoard, removeElement, clearItems, showItem };
+    function showFooter() {
+        const year = new Date().getFullYear();
+        footerEle.insertAdjacentHTML('afterbegin', Template.renderFooter(GithubImg, year));
+    }
+    
+
+    return { showDate, clearAddItemEle, bindAddItem, bindAddItemLabel, bindToggleCompleted, bindDeleteItem, bindEditItem, bindChangeRoute, markCurrentRoute, bindClearCompletedItems, bindToggleAll, updateActiveItemsCount, updateCompletedItemsCount, showCompletedItemsCount, hideCompletedItemsCount, hideItemsBoard, showItemsBoard, hideToggleAll, toggleAllChecked, toggleAllNotChecked, removeElement, clearItems, showItem, showFooter };
 
 })();

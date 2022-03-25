@@ -4,24 +4,42 @@
     <meta charset="utf-8" />
     <title>Todo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script defer src="./dist/bundle.js"></script>
+    <script defer src="./dist/js/bundle.js"></script>
   </head>
   <body>
-    <div class="todo">
-      <div class="addItemContainer">
-        <div class="toggleAll">All</div>
-        <input class="addItem" type="text" name="addItem" id="addItem">
-      </div>
-      <div class="itemsBoard">
-        <div class="itemsContainer hidden"></div>
-        <div class="itemsFooter">
-          <div class="activeItemsCount"><span class="count"></span> item left</div>
-          <div class="route" data-route="all">All</div>
-          <div class="route" data-route="active">Active</div>
-          <div class="route" data-route="completed">Completed</div>
-          <div class="completedItemsCount">Clear <span class="count"></span> completed items</div>
+    <div class="logo">TODO</div>
+    <div class="main">
+      <div class="todo">
+        <div class="title">
+          <div class="date">
+            <div class="day"></div>
+            <div class="month"></div>
+            <div class="year"></div>
+          </div>
+          <div class="weekday"></div>
+        </div>
+        <div class="addItemContainer">
+          <input type="checkbox" class="toggleAll material-icons">
+          <div class="addItemForm">
+            <input class="addItem" type="text" name="addItem" id="addItem">
+            <label class="addItemLabel" for="addItem">What needs to be done?</label>
+          </div>
+        </div>
+        <div class="itemsBoard">
+          <div class="itemsContainer hidden"></div>
+          <div class="itemsFooter">
+            <div class="activeItemsCount"><span class="count"></span>&nbsp; item left</div>
+            <div class="routes">
+              <div class="route" data-route="all">All</div>
+              <div class="route" data-route="active">Active</div>
+              <div class="route" data-route="completed">Completed</div>
+            </div>
+            <div class="completedItemsCount">Clear &nbsp;<span class="count"></span>&nbsp; completed items</div>
+          </div>
         </div>
       </div>
     </div>
+    <div class="footer"></div>
+      
   </body>
 </html>

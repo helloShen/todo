@@ -6,6 +6,8 @@ import Controller from './controller.js';
     Controller.enableChangeRoute();
     Controller.enableClearCompletedItems();
     Controller.enableToggleAll();
+    Controller.showDate();
     Controller.showItems();
     Controller.updateItemsCount();
+    Controller.showFooter();
 })();
