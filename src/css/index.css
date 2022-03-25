@@ -128,8 +128,8 @@ body {
 }
 
 .todo .toggleAll::after {
-    font-size: 2rem;
-    margin: 0 .5rem;
+    font-size: 1.5rem;
+    margin: 0 .75rem;
     content: "radio_button_unchecked";
     color: var(--border-gray);
 }
@@ -328,6 +328,7 @@ body {
 .footer {
     height: 4.5rem;
     width: 100%;
+    font-family: 'Roboto', sans-serif;
     font-size: .75rem;
     color: var(--gray);
     display: grid;

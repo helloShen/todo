@@ -8,6 +8,9 @@ import Store from './store.js';
 
 export default (() => {
 
+    const defaultRoute = 'all';
+
+    /* A factory function creating new item object. */
     const Item = (() => {
 
         function create(text) {
@@ -59,10 +62,11 @@ export default (() => {
         return { getKey, getValue };
     }
 
+    /* A wrapper function. Set current route to default value, if no route exits. */
     function getCurrentRoute() {
         const route = Store.getCurrentRoute();
         if (!route) {
-            Store.setCurrentRoute('all');
+            Store.setCurrentRoute(defaultRoute);
             return Store.getCurrentRoute();
         }
         return route;
@@ -87,7 +91,7 @@ export default (() => {
         return arr;
     }
 
-    /* return a sub-array which meet the requirements of the query 
+    /* Return a sub-array which meet the requirements of the query 
      * queries is an array of [key, value] pair */
     function findItems(queries) {
         const allItemsArr = findAllItems();
@@ -102,6 +106,7 @@ export default (() => {
         });
     }
 
+    /* Create a new Item object and save it into storage. */
     function addItem(text) {
         Store.updateItems((itemsObj) => {
             const itemObj = Item.create(text);
@@ -109,6 +114,7 @@ export default (() => {
         });
     }
 
+    /* Remove an item from storage. */
     function deleteItem(itemId) {
         if (!hasItem()) return;
         Store.updateItems((itemsObj) => {
@@ -116,6 +122,7 @@ export default (() => {
         });
     }
 
+    /* Update properties of an item. */
     function updateItem(itemId, itemValue) {
         if (!hasItem()) return;
         Store.updateItems((itemsObj) => {
@@ -124,6 +131,7 @@ export default (() => {
         });
     }
 
+    /* Update item "completed" property. */
     function toggleCompleted(itemId) {
         if (!hasItem()) return;
         Store.updateItems((itemsObj) => {
@@ -132,6 +140,7 @@ export default (() => {
         });
     }
 
+    /* Batch processing of toggling item "completed" property. */
     function toggleAll(itemsArr) {
         Store.updateItems((itemsObj) => {
             itemsArr.forEach((itemObj) => {

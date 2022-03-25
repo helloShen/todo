@@ -10,6 +10,7 @@ import Model from './model.js';
 
 export default (() => {
 
+    /* Format the date. */
     const MyDate = (() => {
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         
@@ -22,6 +23,7 @@ export default (() => {
         return { getToday };
     })();
 
+    /* Cut the date string into weekday, day, month and year. View module knows how to show them. */
     function showDate() {
         let [weekday, monthDay, year] = MyDate.getToday();
         let [month, day] = monthDay.split(' ');
@@ -29,10 +31,13 @@ export default (() => {
         View.showDate(weekday, day, month, year); 
     }
 
+    /* Call view to print footer. */
     function showFooter() {
         View.showFooter();
     }
 
+    /* Pre-define queries for three different routes: all, active and completed. 
+     * Model.find() function accepts only an array of Query as input to filter items we want. */
     const ItemsQueries = (() => {
         const queries = {
             'all': [],
@@ -46,10 +51,15 @@ export default (() => {
         return { get };
     })();
 
+    /* Get the queries from ItemsQueries, and feed them to Model.findItems() function. */
     function filterItems(route) {
         return Model.findItems(ItemsQueries.get(route));
     }
 
+    /* Get the current route from storage, filter items under current route and call view to
+     * create items card in DOM. 
+     * View.showItem() function requires a callback function to tell him which buttons need
+     * to be activated after item card is created.*/
     function showItems() {
         const itemsObjArr = filterItems(Model.getCurrentRoute());
         View.clearItems();
@@ -62,6 +72,9 @@ export default (() => {
         });
     }
 
+    /* Update the count number of three different routes(all, active and completed) listed
+     * on todo board.
+     * The entire items board will be hidden if no items left in items list. */
     function updateItemsCount() {
         const activeCount = filterItems('active').length;
         const completedCount = filterItems('completed').length;
@@ -72,7 +85,7 @@ export default (() => {
         } else {
             View.showCompletedItemsCount();
         }
-        if (activeCount + completedCount === 0) {
+        if (activeCount + completedCount === 0) { // hide the entire item board if 0 item left
             View.hideItemsBoard();
             View.hideToggleAll();
         } else {
@@ -85,24 +98,33 @@ export default (() => {
         }
     }
 
+    /* Call View to bind event listeners for adding new item feature. Main logic addItem() function
+     * is fed as a callback function. */
     function enableAddItem() {
         View.bindAddItem(addItem);
         View.bindAddItemLabel();
     }
 
+    /* Call View to bind event listeners for route switch buttons. Main logic function changeRoute()
+     * is fed as a callback function. */
     function enableChangeRoute() {
         const currentRoute = Model.getCurrentRoute();
         View.bindChangeRoute(changeRoute, () => View.markCurrentRoute(currentRoute));
     }
 
+    /* Call View to bind event listeners for clear buttons. Main logic clearAllCompletedItem()
+     * function is fed as a callback function. */
     function enableClearCompletedItems() {
         View.bindClearCompletedItems(clearAllCompletedItems);
     }
 
+    /* Call View to bind event listeners for toggleAll buttons. Main logic toggleAll() function is 
+     * fed as a callback function. */
     function enableToggleAll() {
         View.bindToggleAll(toggleAll);
     }
 
+    /* Main logic of how to add a new item. */
     function addItem(text) {
         Model.addItem(text);
         View.clearAddItemEle();
@@ -110,17 +132,20 @@ export default (() => {
         updateItemsCount();
     }
 
+    /* Main logic of toggling an item to completed. */
     function toggleCompleted(itemId) {
         Model.toggleCompleted(itemId);
         showItems(); // must refresh current route.
         updateItemsCount();
     }
 
+    /* Main logic of what happend when delete button is clicked. */
     function deleteItem(itemId) {
         Model.deleteItem(itemId);
         updateItemsCount();
     }
 
+    /* Main login of editing an item. */
     function editItem(itemId, itemValue, callback) {
         if (!itemValue) {
             Model.deleteItem(itemId);
@@ -131,11 +156,13 @@ export default (() => {
         }
     }
 
+    /* Main logic of switching route. */
     function changeRoute(route) {
         Model.setCurrentRoute(route);
         showItems();
     }
 
+    /* Main logic of "clear all completed" button. */
     function clearAllCompletedItems() {
         const completedItemsArr = Model.findItems(ItemsQueries.get('completed'));
         completedItemsArr.forEach((itemObj) => {
@@ -146,6 +173,7 @@ export default (() => {
         updateItemsCount();
     }
 
+    /* Main logic of "toggle all" button. */
     function toggleAll() {
         if (Model.hasItem()) {
             const activeItemsArr = Model.findItems(ItemsQueries.get('active'));
