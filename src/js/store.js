@@ -1,3 +1,6 @@
+/* 
+ * store.js knows only how to read/write string data from/to Document.localStorage.
+ */
 export default (() => {
 
     const itemsKey = 'todoItems';

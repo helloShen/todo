@@ -1,3 +1,9 @@
+/*
+ * A DAO(Data Access Object) API. 
+ * It's aware of the data structure of Item and other objects. 
+ * And knows how to insert, update, delete and read these data.
+ */
+
 import Store from './store.js';
 
 export default (() => {

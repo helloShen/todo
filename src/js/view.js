@@ -1,3 +1,6 @@
+/*
+ * All DOM manipulations go to this file. 
+ */
 import Template from './template.js';
 import GithubImg from '../assets/img/github_black.png';
 

@@ -1,3 +1,10 @@
+/*
+ * controller.js is a general manager. 
+ * He is the only one who knows all the logic of different features. 
+ * But he is blind from both data and DOM. 
+ * model.js and view.js do these concrete tasks for him.
+ */
+
 import View from './view.js';
 import Model from './model.js';
 

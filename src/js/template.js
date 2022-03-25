@@ -1,3 +1,6 @@
+/*
+ * A helper of view.js. Only used to store HTML templates.
+ */
 export default (() => {
 
     function renderItem(itemObj) {
