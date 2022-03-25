@@ -19,7 +19,6 @@ export default (() => {
         let [weekday, monthDay, year] = MyDate.getToday();
         let [month, day] = monthDay.split(' ');
         month = month.slice(0, 3).toUpperCase();
-        // weekday = weekday.toUpperCase();
         View.showDate(weekday, day, month, year); 
     }
 
