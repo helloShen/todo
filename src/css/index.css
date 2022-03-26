@@ -222,6 +222,7 @@ body {
 .todo .item > .text {
 	height: 100%;
 	color: var(--gray);
+  outline: none;
 	display: grid;
 	align-items: center;
 }
@@ -232,7 +233,8 @@ body {
 }
 
 .todo .item > .text.editting {
-	outline-color: var(--border-gray);
+  border: 1px solid var(--border-gray);
+  border-radius: .25rem;
 	background-color: var(--back-gray);
 }
 
