@@ -9,51 +9,27 @@ import View from './view';
 import Model from './model';
 
 export default (() => {
-  /* Format the date. */
-  const MyDate = (() => {
-    const options = {
-      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-    };
-
-    /* Cut the date string into weekday, day, month and year. View module knows how to show them. */
-    function getToday() {
-      const today = new Date();
-      const todayStr = today.toLocaleDateString('en-US', options); // Saturday, September 17, 2016
-      const [weekday, monthDay, year] = todayStr.split(', ');
-      // eslint-disable-next-line prefer-const
-      let [month, day] = monthDay.split(' ');
-      month = month.slice(0, 3).toUpperCase();
-      return {
-        weekday, day, month, year,
-      };
-    }
-
-    return { getToday };
-  })();
-
-  function showDate() {
-    View.showDate(MyDate.getToday());
-  }
-
-  /* Call view to print footer. */
-  function showFooter() {
-    View.showFooter();
-  }
-
   /* Pre-define queries for three different routes: all, active and completed.
    * Model.find() function accepts only an array of Query as input to filter items we want. */
-  const ItemsQuery = (route) => {
+  const ItemsQuery = (() => {
     const queryBank = {
       all: [],
       active: [Model.Query('completed', false)],
       completed: [Model.Query('completed', true)],
     };
-    return queryBank[route];
-  };
+
+    function create(route) {
+      return queryBank[route];
+    }
+    return {
+      create,
+    };
+  })();
 
   /* Get the queries from ItemsQuery, and feed them to Model.findItems() function. */
   function filterItems(route) {
-    return Model.findItems(ItemsQuery(route));
+    const queries = ItemsQuery.create(route);
+    return Model.findItems(queries);
   }
 
   /* Update the count number of three different routes(all, active and completed) listed
@@ -87,9 +63,9 @@ export default (() => {
    * View.showItem() function requires a callback function to tell him
    * which buttons need to be activated after item card is created. */
   function showItems() {
-    const itemsObjArr = filterItems(Model.getCurrentRoute());
+    const itemsArr = filterItems(Model.getCurrentRoute());
     View.clearItems();
-    itemsObjArr.forEach((itemObj) => {
+    itemsArr.forEach((itemObj) => {
       View.showItem(itemObj, (target) => {
         // eslint-disable-next-line no-use-before-define
         View.bindToggleCompleted(target, toggleCompleted);
@@ -111,7 +87,7 @@ export default (() => {
 
   /* Main logic of toggling an item to completed. */
   function toggleCompleted(itemId) {
-    Model.toggleCompleted(itemId);
+    Model.toggleItemCompleted(itemId);
     showItems(); // must refresh current route.
     updateItemsCount();
   }
@@ -129,7 +105,7 @@ export default (() => {
       updateItemsCount();
       callback(); // callback view if need to remove that item from view.
     } else {
-      Model.updateItem(itemId, itemValue);
+      Model.updateItem(itemId, Model.Query('title', itemValue));
     }
   }
 
@@ -141,10 +117,9 @@ export default (() => {
 
   /* Main logic of "clear all completed" button. */
   function clearAllCompletedItems() {
-    const completedItemsArr = Model.findItems(ItemsQuery('completed'));
+    const completedItemsArr = filterItems('completed');
     completedItemsArr.forEach((itemObj) => {
-      const id = Model.Item.getId.call(itemObj);
-      Model.deleteItem(id);
+      Model.deleteItem(itemObj.id);
     });
     showItems();
     updateItemsCount();
@@ -152,15 +127,22 @@ export default (() => {
 
   /* Main logic of "toggle all" button. */
   function toggleAll() {
-    if (Model.hasItem()) {
-      const activeItemsArr = Model.findItems(ItemsQuery('active'));
-      if (activeItemsArr.length > 0) {
-        Model.toggleAll(activeItemsArr);
-      } else {
-        Model.toggleAll(Model.findItems(ItemsQuery('completed')));
-      }
+    const activeItemsArr = filterItems('active');
+    if (activeItemsArr.length > 0) {
+      activeItemsArr.forEach((itemObj) => {
+        Model.toggleItemCompleted(itemObj.id);
+      });
       showItems();
       updateItemsCount();
+    } else {
+      const completedItemsArr = filterItems('completed');
+      if (completedItemsArr.length > 0) {
+        completedItemsArr.forEach((itemObj) => {
+          Model.toggleItemCompleted(itemObj.id);
+        });
+        showItems();
+        updateItemsCount();
+      }
     }
   }
 
@@ -188,6 +170,39 @@ export default (() => {
    * Main logic toggleAll() function is fed as a callback function. */
   function enableToggleAll() {
     View.bindToggleAll(toggleAll);
+  }
+
+  /* Format the date. */
+  const MyDate = (() => {
+    const options = {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+    };
+
+    /* Cut the date string into weekday, day, month and year. View module knows how to show them. */
+    function getToday() {
+      const today = new Date();
+      const todayStr = today.toLocaleDateString('en-US', options); // Saturday, September 17, 2016
+      const [weekday, monthDay, year] = todayStr.split(', ');
+      // eslint-disable-next-line prefer-const
+      let [month, day] = monthDay.split(' ');
+      month = month.slice(0, 3).toUpperCase();
+      return {
+        weekday, day, month, year,
+      };
+    }
+
+    return {
+      getToday,
+    };
+  })();
+
+  function showDate() {
+    View.showDate(MyDate.getToday());
+  }
+
+  /* Call view to print footer. */
+  function showFooter() {
+    View.showFooter();
   }
 
   return {
